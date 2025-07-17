@@ -1,0 +1,38 @@
+services:
+  app:
+    image: app
+    container_name: spring-app
+    build:
+      context: .
+    ports:
+      - 8080:8080
+      - 5050:5050
+    working_dir: /app
+    volumes:
+      - ./src:/app/src
+      - ./pom.xml:/app/pom.xml
+      - ./target:/app/target
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      JAVA_TOOL_OPTTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5050
+      JAVA_OPTS: -Dspring.devtools.restart.enabled=true -Dspring.devtools.livereload.enabled=true
+    command: mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:5050"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.1
+    platform: linux/arm64/v8
+    container_name: spring-mysql
+    volumes:
+      - spring_mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: development
+      TZ: 'Asia/Tokyo'
+
+volumes:
+  spring_mysql_data:

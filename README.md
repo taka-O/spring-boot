@@ -12,14 +12,19 @@ docker compose up -d
 # Docker spring-boot環境への接続
 docker compose exec app bash
 
-# jwt用 公開鍵、秘密鍵生成
+# 認証関連
+<h3>jwt用 公開鍵、秘密鍵生成</h3>
 cd src/main/resources<br/>
 openssl genrsa -out private.pem 2048<br/>
 openssl rsa -in private.pem -outform PEM -pubout -out public.pem<br/>
 openssl pkcs8 -topk8 -inform PEM -in private.pem -out private_key.pem -nocrypt<br/>
 rm -f private.pem
 
-# application.propertiesに公開鍵、秘密鍵のパスを定義
+<h3>application.propertiesに公開鍵、秘密鍵のパスを定義</h3>
 jwt.private-key=classpath:private_key.pem<br/>
 jwt.public-key=classpath:public.pem<br/>
 spring.security.oauth2.resourceserver.jwt.public-key-location=${jwt.public-key}<br/>
+
+<h3>参考サイト</h3>
+Java 21/Spring Boot 3で実装する最新JWT認証ガイド https://zenn.dev/okamyuji/articles/0bfcc5a9b17cb5<br/>
+Spring BootでJWT認証・認可の設定メモ https://ik.am/entries/818

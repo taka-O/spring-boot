@@ -1,5 +1,5 @@
 services:
-  app:
+  spring:
     image: app
     container_name: spring-app
     build:
@@ -20,6 +20,8 @@ services:
     command: mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:5050"
     depends_on:
       - db
+    networks:
+      - dev_network
 
   db:
     image: mysql:8.1
@@ -33,6 +35,13 @@ services:
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: development
       TZ: 'Asia/Tokyo'
+    networks:
+      - dev_network
 
 volumes:
   spring_mysql_data:
+
+networks:
+  dev_network:
+    external: true
+    name: dev_network

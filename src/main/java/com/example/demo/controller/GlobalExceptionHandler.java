@@ -21,6 +21,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   MessageSource messageSource;
 
   @Override
+  @SuppressWarnings("null")
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
     MethodArgumentNotValidException ex, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
 

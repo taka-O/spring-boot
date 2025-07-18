@@ -1,8 +1,10 @@
 package com.example.demo.controller.admin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -154,12 +156,19 @@ public class UserControllerTest {
   void エラーのため登録できないことを確認(@Autowired MockMvc mvc) throws Exception {
     String requestBody = "{\"name\":\"\",\"email\":\"\",\"role\":\"\"}";
 
-    mvc.perform(
+    MvcResult result = mvc.perform(
             MockMvcRequestBuilders.post("/api/admin/users")
               .contentType(MediaType.APPLICATION_JSON)
               .content(requestBody)
         )
-        .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("error"))
+        .andReturn();
+
+    HashMap<String, Object> errors = JsonPath.read(result.getResponse().getContentAsString(StandardCharsets.UTF_8), "$.errors");
+    assertNotNull(errors.get("name"));
+    assertNotNull(errors.get("email"));
+    assertNotNull(errors.get("role"));
   }
 
   @Test
@@ -187,12 +196,19 @@ public class UserControllerTest {
 
     String requestBody = "{\"name\":\"\",\"email\":\"\",\"role\":\"\"}";
 
-    mvc.perform(
+    MvcResult result = mvc.perform(
             MockMvcRequestBuilders.put("/api/admin/users/" + user.getId().toString())
               .contentType(MediaType.APPLICATION_JSON)
               .content(requestBody)
         )
-        .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("error"))
+        .andReturn();
+
+    HashMap<String, Object> errors = JsonPath.read(result.getResponse().getContentAsString(StandardCharsets.UTF_8), "$.errors");
+    assertNotNull(errors.get("name"));
+    assertNotNull(errors.get("email"));
+    assertNotNull(errors.get("role"));
   }
 
 }

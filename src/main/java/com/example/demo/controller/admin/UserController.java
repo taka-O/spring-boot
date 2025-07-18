@@ -19,6 +19,7 @@ import com.example.demo.response.UserResponse;
 import com.example.demo.service.UserService;
 import com.example.demo.service.UserService.UserRequest;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -38,7 +39,7 @@ public class UserController {
   }
   
   @PostMapping("/users")
-  public ResponseEntity<UserResponse> sotre(@RequestBody @Validated UserRequest request) {
+  public ResponseEntity<UserResponse> sotre(@RequestBody @Valid UserRequest request) {
     User user = userService.createUser(request.name(), request.email(), request.role());
     return new ResponseEntity<>(new UserResponse(user), HttpStatus.CREATED);
   }

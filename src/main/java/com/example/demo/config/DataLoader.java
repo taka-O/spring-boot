@@ -23,7 +23,7 @@ public class DataLoader implements ApplicationRunner {
 	
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		final String ADMIN_USER = "admin@email.com";
+		final String ADMIN_USER = "admin@example.com";
 		
  		Optional<User> user = userRipository.findByEmail(ADMIN_USER);
 		if (user.isEmpty()) {

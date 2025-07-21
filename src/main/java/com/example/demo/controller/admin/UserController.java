@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
   private final UserService userService;
-  
+
   @GetMapping("/users")
   public ResponseEntity<List<UserResponse>> findUsers(@RequestParam(value = "name", required = false) String name,
                             @RequestParam(value = "email", required = false) String email,

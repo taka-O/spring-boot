@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,23 +23,26 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.example.demo.model.User;
-import com.example.demo.repository.AccessConfig;
 import com.example.demo.repository.operation.UserOperation;
 import com.example.demo.service.UserService;
 import com.jayway.jsonpath.JsonPath;
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.Operations;
+import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class UserControllerTest {
+
+  @Autowired
+  private DataSource dataSource;
 
 	@Autowired
 	UserService userService;
 
   @BeforeEach
   public void setUp() {
-    new DbSetup(AccessConfig.dest, Operations.sequenceOf(UserOperation.DELETE_ALL, UserOperation.INSERT_USER)).launch();
+    new DbSetup(new DataSourceDestination(dataSource), Operations.sequenceOf(UserOperation.DELETE_ALL, UserOperation.INSERT_USER)).launch();
   }
 
   @Test

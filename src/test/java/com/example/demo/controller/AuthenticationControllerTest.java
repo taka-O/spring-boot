@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.UUID;
 
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +20,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.example.demo.repository.AccessConfig;
 import com.example.demo.util.Role;
 import com.jayway.jsonpath.JsonPath;
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.Operations;
+import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
 
 @SpringBootTest
@@ -37,9 +39,12 @@ public class AuthenticationControllerTest {
 			.values(UUID.randomUUID().toString(), "test user", "hogehoge@test.com", passwordEncoder.encode("Hogehoge"), Role.ADMIN.getId())
       .build();
 
+  @Autowired
+  private DataSource dataSource;
+
   @BeforeEach
   public void setUp() {
-    new DbSetup(AccessConfig.dest, Operations.sequenceOf(DELETE_ALL_USER, INSERT_USER)).launch();
+    new DbSetup(new DataSourceDestination(dataSource), Operations.sequenceOf(DELETE_ALL_USER, INSERT_USER)).launch();
   }
 
   @Test

@@ -38,6 +38,7 @@ mysql -u root -p<br>
 パスワードは、secret（compose.ymlで定義しているもの）
 <li>test databaseを作成</li>
 create database test;<br>
+</ul>
 
 # テスト実行
 mvn test

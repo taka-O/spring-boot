@@ -28,3 +28,13 @@ spring.security.oauth2.resourceserver.jwt.public-key-location=${jwt.public-key}<
 <h3>参考サイト</h3>
 Java 21/Spring Boot 3で実装する最新JWT認証ガイド https://zenn.dev/okamyuji/articles/0bfcc5a9b17cb5<br/>
 Spring BootでJWT認証・認可の設定メモ https://ik.am/entries/818
+
+# テストDBの作成
+<ul>
+<li>DBコンテナに接続</li>
+docker compose exec db bash
+<li>mysqlに接続</li>
+mysql -u root -p<br>
+パスワードは、secret（compose.ymlで定義しているもの）
+<li>test databaseを作成</li>
+create database test;<br>

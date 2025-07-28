@@ -18,12 +18,12 @@ public class CusomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username)
+    public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException {
 
         // SecurityConfig.javaの下部からコピーします
         // ユーザ名を検索します（ユーザが存在しない場合は、例外をスローします）
-        UserBuilder user = userRepository.findByEmail(username)
+        UserBuilder user = userRepository.findByEmail(email)
                 .map(u -> User.builder()
                         .username(u.getEmail())
                         .password(u.getPassword())

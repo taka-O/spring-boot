@@ -20,6 +20,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.example.demo.model.User;
+import com.example.demo.service.ResetPasswordService;
+import com.example.demo.service.UserService;
 import com.example.demo.util.Role;
 import com.jayway.jsonpath.JsonPath;
 import com.ninja_squad.dbsetup.DbSetup;
@@ -33,10 +36,17 @@ public class AuthenticationControllerTest {
 
 	static private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+	@Autowired
+	UserService userService;
+
+  @Autowired
+  ResetPasswordService resetPasswordService;
+
   private static final Operation DELETE_ALL_USER = Operations.deleteAllFrom("users");
   private static final Operation INSERT_USER = Operations.insertInto("users")
 			.columns("pid", "name", "email", "password", "role")
 			.values(UUID.randomUUID().toString(), "test user", "hogehoge@test.com", passwordEncoder.encode("Hogehoge"), Role.ADMIN.getId())
+			.values(UUID.randomUUID().toString(), "test student user", "student@test.com", passwordEncoder.encode("Hogehoge"), Role.STUDENT.getId())
       .build();
 
   @Autowired
@@ -113,6 +123,65 @@ public class AuthenticationControllerTest {
 
     String email = JsonPath.read(currentResult.getResponse().getContentAsString(), "$.email");
     assertEquals(email, "hogehoge@test.com");
+  }
+
+  @Test
+  void パスワードリセットトークンが送信できることを確認(@Autowired MockMvc mvc) throws Exception {
+    mvc.perform(
+            MockMvcRequestBuilders.post("/api/auth/send_reset_password_token")
+              .param("email", "student@test.com")
+              .param("reset_url", "http://localhost:3001/reset_pawssword")
+              .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(MockMvcResultMatchers.status().isNoContent());
+  }
+
+  @Test
+  void メールアドレスが存在しないためエラーとなることを確認(@Autowired MockMvc mvc) throws Exception {
+    mvc.perform(
+            MockMvcRequestBuilders.post("/api/auth/send_reset_password_token")
+              .param("email", "student_not_found@test.com")
+              .param("reset_url", "http://localhost:3001/reset_pawssword")
+              .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(MockMvcResultMatchers.status().isNotFound());
+  }
+
+  @Test
+  void パスワードが変更できることを確認(@Autowired MockMvc mvc) throws Exception {
+    User user = userService.createUser("生徒新五郎", "student5ro@test.com", "student");
+    String token = resetPasswordService.generateToken(user);
+    String requestBody = "{\"token\":\"" + token + "\",\"password\":\"H0gehoge-\",\"password_confirmation\":\"H0gehoge-\"}";
+
+    mvc.perform(
+            MockMvcRequestBuilders.post("/api/auth/reset_password")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(requestBody)
+        )
+        .andExpect(MockMvcResultMatchers.status().isNoContent())
+        .andReturn();
+  }
+
+  @Test
+  void トークンが誤っているためエラーとなることを確認(@Autowired MockMvc mvc) throws Exception {
+    String requestBody = "{\"token\":\"hogehagehogehagehogehagehogehagehogehage\",\"password\":\"H0gehoge-\",\"password_confirmation\":\"H0gehoge-\"}";
+    mvc.perform(
+            MockMvcRequestBuilders.post("/api/auth/reset_password")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(requestBody)
+        )
+        .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+  }
+
+  @Test
+  void パスワードが一致しないためエラーとなることを確認(@Autowired MockMvc mvc) throws Exception {
+    String requestBody = "{\"token\":\"hogehagehogehagehogehagehogehagehogehage\",\"password\":\"H0gehoge-\",\"password_confirmation\":\"Hogehoge-\"}";
+    mvc.perform(
+            MockMvcRequestBuilders.post("/api/auth/reset_password")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(requestBody)
+        )
+        .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
   }
 
 }

@@ -38,8 +38,20 @@ services:
     networks:
       - dev_network
 
+  mailhog:
+    image: mailhog/mailhog
+    container_name: spring-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    volumes:
+      - mailhog-data:/data
+    networks:
+      - dev_network
+
 volumes:
   spring_mysql_data:
+  mailhog-data:
 
 networks:
   dev_network:

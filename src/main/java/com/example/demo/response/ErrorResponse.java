@@ -16,6 +16,11 @@ public class ErrorResponse {
     private String message;
     private HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
+    public ErrorResponse(String status, String message) {
+      this.status = status;
+      this.message = message;
+    }
+
     public ErrorResponse(String status, String message, BindingResult bindingResult) {
       this.status = status;
       this.message = message;

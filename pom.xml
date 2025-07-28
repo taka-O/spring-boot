@@ -57,6 +57,11 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+		<!-- ▼ メール用 ▼ -->
+		<dependency>
+		  <groupId>org.springframework.boot</groupId>
+		  <artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
 		<!-- ▼ DB関連 ▼ -->
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>

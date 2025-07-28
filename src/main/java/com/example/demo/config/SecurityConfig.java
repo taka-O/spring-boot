@@ -40,6 +40,8 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		String[] publicUrls = """
 										/api/auth/login
+										/api/auth/send_reset_password_token
+										/api/auth/reset_password
 										/cors
 										""".trim().split("\\s+");
 

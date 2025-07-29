@@ -17,6 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
   Optional<User> findByPid(String pid);
   Optional<User> findByEmail(String email);
   
-  @NonNull 
+  @NonNull
   List<User> findAll(@Nullable Specification<User> spec);
 }

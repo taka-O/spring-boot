@@ -1,7 +1,7 @@
 package com.example.demo.response;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.example.demo.model.User;
 
@@ -26,8 +26,8 @@ public class UserResponse {
     }
 
     public static List<UserResponse> convert(List<User> users) {
-      List<UserResponse> list = new ArrayList<UserResponse>();
-      users.forEach(u -> list.add(new UserResponse(u)));
-      return list;
+      return users.stream()
+                .map(u -> new UserResponse(u))
+                .collect(Collectors.toList());
     }
 }

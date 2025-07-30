@@ -127,10 +127,11 @@ public class AuthenticationControllerTest {
 
   @Test
   void パスワードリセットトークンが送信できることを確認(@Autowired MockMvc mvc) throws Exception {
+    String requestBody = "{\"email\":\"student@test.com\",\"reset_url\":\"http://localhost:3001/reset_pawssword\"}";
+
     mvc.perform(
             MockMvcRequestBuilders.post("/api/auth/send_reset_password_token")
-              .param("email", "student@test.com")
-              .param("reset_url", "http://localhost:3001/reset_pawssword")
+              .content(requestBody)
               .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(MockMvcResultMatchers.status().isNoContent());
@@ -138,10 +139,11 @@ public class AuthenticationControllerTest {
 
   @Test
   void メールアドレスが存在しないためエラーとなることを確認(@Autowired MockMvc mvc) throws Exception {
+    String requestBody = "{\"email\":\"student_not_found@test.com\",\"reset_url\":\"http://localhost:3001/reset_pawssword\"}";
+
     mvc.perform(
             MockMvcRequestBuilders.post("/api/auth/send_reset_password_token")
-              .param("email", "student_not_found@test.com")
-              .param("reset_url", "http://localhost:3001/reset_pawssword")
+              .content(requestBody)
               .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(MockMvcResultMatchers.status().isNotFound());

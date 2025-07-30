@@ -10,7 +10,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.User;
@@ -21,6 +20,7 @@ import com.example.demo.service.AuthenticationService;
 import com.example.demo.service.AuthenticationService.AuthenticationRequest;
 import com.example.demo.service.AuthenticationService.AuthenticationResponse;
 import com.example.demo.service.ResetPasswordService;
+import com.example.demo.service.ResetPasswordService.SendResetPasswordTokenRequest;
 import com.example.demo.service.ResetPasswordService.ResetPasswordRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -47,11 +47,10 @@ public class AuthenticationController {
 	}
 
   @PostMapping("/send_reset_password_token")
-  public ResponseEntity<Object> sendResetPasswordToken(@RequestParam(value = "email", required = false) String email,
-                                           @RequestParam(value = "reset_url", required = false) String resetUrl) {
+  public ResponseEntity<Object> sendResetPasswordToken(@RequestBody @Validated SendResetPasswordTokenRequest request) {
 
     try {
-      resetPasswordService.sendResetPasswordMail(email, resetUrl);
+      resetPasswordService.sendResetPasswordMail(request.email(), request.reset_url());
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     } catch (NotFoundException exception) {

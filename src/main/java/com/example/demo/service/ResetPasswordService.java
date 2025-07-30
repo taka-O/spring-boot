@@ -7,6 +7,7 @@ import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -31,6 +32,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,17 @@ public class ResetPasswordService {
 	private final UserRepository userRipository;
   private final JwtKeyProperties jwtKeyProperties;
   private final JavaMailSender javaMailSender;
+  private final PasswordEncoder passwordEncoder;
+
+  public record SendResetPasswordTokenRequest(
+      @NotBlank
+      @Email
+      String email,
+
+      @NotBlank
+      String reset_url
+  ) {
+  };
 
   public record ResetPasswordRequest(
       @NotBlank
@@ -78,7 +91,8 @@ public class ResetPasswordService {
     User user = userRipository.findByPid(pid)
       .orElseThrow(() -> new NotFoundException());
 
-    user.setPassword(request.password());
+    user.setPassword(passwordEncoder.encode(request.password()));
+    userRipository.save(user);
   }
 
   public String generateToken(User user) {
@@ -106,18 +120,22 @@ public class ResetPasswordService {
 		return NimbusJwtDecoder.withPublicKey(jwtKeyProperties.getPublicKey()).build();
 	}
   public void sendMail(User user, String token, String resetUrl) {
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+    MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
     try {
       MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
       helper.setFrom("from@example.com");
       helper.setTo(user.getEmail());
       helper.setSubject("パスワード再設定");
-      StringBuilder mailText = new StringBuilder();
-      mailText.append("<html><body>");
-      mailText.append("<a href=\"" + resetUrl + "?token=" + token + "&email=" + user.getEmail() + "\">パスワード再設定</a>");
-      mailText.append("</body></html>");
-      helper.setText(mailText.toString(), true);
+
+      String link_url = resetUrl + "?token=" + token + "&email=" + user.getEmail();
+      String insertMessage = "<html>"
+          + "<head></head>"
+          + "<body>"
+          + "<p><a href='" + link_url + "'>パスワード再設定</a></p>"
+          + "</body>"
+          + "</html>";
+      helper.setText(insertMessage, true);
 
       javaMailSender.send(mimeMessage);
 		} catch (MessagingException | MailException ex) {

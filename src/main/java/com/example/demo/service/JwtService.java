@@ -36,9 +36,6 @@ public class JwtService {
     private final JwtConfig jwtConfig;
     private final JwtKeyProperties jwtKeyProperties;
 
-    /**
-     * 認証情報からトークンを生成
-     */
     public String generateToken(Authentication authentication) {
         return generateToken(authentication.getName(), 
                              authentication.getAuthorities().stream()
@@ -46,9 +43,6 @@ public class JwtService {
                                  .collect(Collectors.toList()));
     }
 
-    /**
-     * UserDetailsからトークンを生成
-     */
     public String generateToken(UserDetails userDetails) {
         return generateToken(userDetails.getUsername(), 
                              userDetails.getAuthorities().stream()
@@ -56,9 +50,6 @@ public class JwtService {
                                  .collect(Collectors.toList()));
     }
 
-    /**
-     * ユーザー名と権限リストからトークンを生成
-     */
     public String generateToken(String username, Iterable<String> roles) {
         // 現在の時刻
         Instant now = Instant.now();

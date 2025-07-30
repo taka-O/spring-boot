@@ -61,7 +61,7 @@ public class ResetPasswordService {
 
       @NotBlank
       @Size(min=8)
-      @Pattern(regexp="^(?=.*[A-Z])(?=.*[.?/-])[a-zA-Z0-9.?/-]{8,24}$")
+      @Pattern(regexp="^[a-zA-Z0-9.?/-]{8,24}$$", message="{0}は大文字、小文字を含む半角英数字と記号（.?/-）で8文字以上、24文字以内で入力してください")
       String password,
 
       @NotBlank

@@ -38,7 +38,7 @@ public class UserService {
       String email,
 
       @NotBlank
-      @Pattern(regexp = "^(ADMIN|INSTRUCTOR|STUDENT|admin|instructor|student)$")
+      @Pattern(regexp = "^(ADMIN|INSTRUCTOR|STUDENT|admin|instructor|student)$", message="権限の選択が誤っています")
       String role
     ) {
     }

@@ -27,7 +27,7 @@ public class AnnouncementResponse {
       this.category = announcement.getCategory();
       this.startAt = announcement.getStartAt();
       this.endAt = announcement.getEndAt();
-      //this.courses = CourseResponse.convert(announcement.getCourses());
+      this.courses = CourseResponse.convert(announcement.getCourses());
     }
 
     public static List<AnnouncementResponse> convert(List<Announcement> announcements) {

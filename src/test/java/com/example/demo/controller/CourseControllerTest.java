@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -60,9 +61,28 @@ public class CourseControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath("$", org.hamcrest.Matchers.hasSize(3)))
         .andReturn();
 
-    List<Map<String, String>> list = JsonPath.read(result.getResponse().getContentAsString(StandardCharsets.UTF_8), "$");
-    List<String> names = list.stream().map(v -> v.get("name")).collect(Collectors.toList());
+    List<Map<String, Object>> list = JsonPath.read(result.getResponse().getContentAsString(StandardCharsets.UTF_8), "$");
+    List<String> names = list.stream().map(v -> v.get("name").toString()).collect(Collectors.toList());
     assertThat(names.toArray(), is(arrayContaining("コース１", "コース２", "コース３")));
+
+    List<Map<String, String>> course1_instructors = (List<Map<String, String>>) list.get(0).get("instructors");
+    assertEquals(course1_instructors.size(), 1);
+    assertEquals(course1_instructors.get(0).get("name").toString(), "講師一郎");
+    List<Map<String, String>> course1_students = (List<Map<String, String>>) list.get(0).get("students");
+    List<String>  course1_student_names = course1_students.stream().map(v -> v.get("name").toString()).collect(Collectors.toList());
+    assertThat(course1_student_names.toArray(), is(arrayContaining("生徒一郎", "生徒二郎", "生徒四郎")));
+
+    List<Map<String, String>> course2_instructors = (List<Map<String, String>>) list.get(1).get("instructors");
+    assertEquals(course2_instructors.size(), 1);
+    assertEquals(course2_instructors.get(0).get("name").toString(), "講師二郎");
+    List<Map<String, String>> course2_students = (List<Map<String, String>>) list.get(1).get("students");
+    List<String> course2_student_names = course2_students.stream().map(v -> v.get("name").toString()).collect(Collectors.toList());
+    assertThat(course2_student_names.toArray(), is(arrayContaining("生徒三郎", "生徒四郎")));
+
+    List<Map<String, String>> course3_instructors = (List<Map<String, String>>) list.get(2).get("instructors");
+    assertEquals(course3_instructors.size(), 0);
+    List<Map<String, String>> course3_students = (List<Map<String, String>>) list.get(2).get("students");
+    assertEquals(course3_students.size(), 0);
   }
 
   @Test
@@ -77,9 +97,16 @@ public class CourseControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath("$", org.hamcrest.Matchers.hasSize(1)))
         .andReturn();
 
-    List<Map<String, String>> list = JsonPath.read(result.getResponse().getContentAsString(StandardCharsets.UTF_8), "$");
-    List<String> names = list.stream().map(v -> v.get("name")).collect(Collectors.toList());
+    List<Map<String, Object>> list = JsonPath.read(result.getResponse().getContentAsString(StandardCharsets.UTF_8), "$");
+    List<String> names = list.stream().map(v -> v.get("name").toString()).collect(Collectors.toList());
     assertThat(names.toArray(), is(arrayContaining("コース２")));
+
+    List<Map<String, String>> course_instructors = (List<Map<String, String>>) list.get(0).get("instructors");
+    assertEquals(course_instructors.size(), 1);
+    assertEquals(course_instructors.get(0).get("name").toString(), "講師二郎");
+    List<Map<String, String>> course_students = (List<Map<String, String>>) list.get(0).get("students");
+    List<String> course_student_names = course_students.stream().map(v -> v.get("name").toString()).collect(Collectors.toList());
+    assertThat(course_student_names.toArray(), is(arrayContaining("生徒三郎", "生徒四郎")));
   }
 
   @Test
@@ -94,9 +121,23 @@ public class CourseControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath("$", org.hamcrest.Matchers.hasSize(2)))
         .andReturn();
 
-    List<Map<String, String>> list = JsonPath.read(result.getResponse().getContentAsString(StandardCharsets.UTF_8), "$");
-    List<String> names = list.stream().map(v -> v.get("name")).collect(Collectors.toList());
+    List<Map<String, Object>> list = JsonPath.read(result.getResponse().getContentAsString(StandardCharsets.UTF_8), "$");
+    List<String> names = list.stream().map(v -> v.get("name").toString()).collect(Collectors.toList());
     assertThat(names.toArray(), is(arrayContaining("コース１", "コース２")));
+
+    List<Map<String, String>> course1_instructors = (List<Map<String, String>>) list.get(0).get("instructors");
+    assertEquals(course1_instructors.size(), 1);
+    assertEquals(course1_instructors.get(0).get("name").toString(), "講師一郎");
+    List<Map<String, String>> course1_students = (List<Map<String, String>>) list.get(0).get("students");
+    List<String>  course1_student_names = course1_students.stream().map(v -> v.get("name").toString()).collect(Collectors.toList());
+    assertThat(course1_student_names.toArray(), is(arrayContaining("生徒一郎", "生徒二郎", "生徒四郎")));
+
+    List<Map<String, String>> course2_instructors = (List<Map<String, String>>) list.get(1).get("instructors");
+    assertEquals(course2_instructors.size(), 1);
+    assertEquals(course2_instructors.get(0).get("name").toString(), "講師二郎");
+    List<Map<String, String>> course2_students = (List<Map<String, String>>) list.get(1).get("students");
+    List<String> course2_student_names = course2_students.stream().map(v -> v.get("name").toString()).collect(Collectors.toList());
+    assertThat(course2_student_names.toArray(), is(arrayContaining("生徒三郎", "生徒四郎")));
   }
 
 }

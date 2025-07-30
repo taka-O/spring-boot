@@ -1,13 +1,11 @@
 package com.example.demo.response;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.demo.model.Course;
 import com.example.demo.model.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -20,8 +18,8 @@ public class CourseResponse {
   private String description;
   private LocalDateTime startAt;
   private LocalDateTime endAt;
-  @JsonIgnore
-  private List<User> users;
+  private List<UserResponse> instructors;
+  private List<UserResponse> students;
 
   public CourseResponse(Course course) {
     this.id = course.getId();
@@ -29,6 +27,8 @@ public class CourseResponse {
     this.description = course.getDescription();
     this.startAt = course.getStartAt();
     this.endAt = course.getEndAt();
+    setInstructors(course.getUsers());
+    setStudents(course.getUsers());
   }
 
   public static List<CourseResponse> convert(List<Course> courses) {
@@ -37,23 +37,17 @@ public class CourseResponse {
               .collect(Collectors.toList());
   }
 
-  @JsonIgnore
-  public List<User> getInstructors() {
-    List<User> instructors = new ArrayList<>();
-    users.stream().forEach(user -> {
-      if (user.isInstructor()) { instructors.add(user); }
-    });
-
-    return instructors;
+  public void setInstructors(List<User> users) {
+    List<User> instructror_users = users.stream()
+      .filter(u -> u.isInstructor())
+      .collect(Collectors.toList());
+    this.instructors = UserResponse.convert(instructror_users);
   }
 
-  @JsonIgnore
-  public List<User> getStudents() {
-    List<User> instructors = new ArrayList<>();
-    users.stream().forEach(user -> {
-      if (user.isStudent()) { instructors.add(user); }
-    });
-
-    return instructors;
+  public void setStudents(List<User> users) {
+    List<User> student_users = users.stream()
+      .filter(u -> u.isStudent())
+      .collect(Collectors.toList());
+    this.students = UserResponse.convert(student_users);
   }
 }

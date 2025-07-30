@@ -69,6 +69,6 @@ public class User {
 	}
 
 	public boolean isStudent() {
-		return role == Role.INSTRUCTOR.getId();
+		return role == Role.STUDENT.getId();
 	}
 }

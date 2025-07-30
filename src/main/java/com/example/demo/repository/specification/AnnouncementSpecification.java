@@ -16,6 +16,7 @@ import com.example.demo.model.User;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
@@ -33,6 +34,8 @@ public class AnnouncementSpecification implements Specification<Announcement> {
       List<Predicate> predicates = new ArrayList<>();
       Subquery<Long> subquery = null;
       LocalDateTime now = LocalDateTime.now();
+
+      root.fetch("courses", JoinType.LEFT);
 
       predicates.add(builder.lessThanOrEqualTo(root.get("startAt"), now));
       predicates.add(builder.greaterThanOrEqualTo(root.get("endAt"), now));

@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -54,11 +55,11 @@ public class Announcement {
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 
-  @OneToMany
+  @OneToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "announcement_courses")
   private List<AnnouncementCourse> announcementCourses;
 
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "announcement_courses", joinColumns = @JoinColumn(name = "announcement_id"), inverseJoinColumns = @JoinColumn(name = "course_id"))
   private List<Course> courses;
 

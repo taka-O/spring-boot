@@ -7,7 +7,8 @@ Spring boot 3.3.4<br/>
 mysql 8.1<br/>
 
 # Dockerセットアップ、および起動
-docker compose up -d
+docker compose up -d<br>
+※　エラー「network dev_network declared as external, but could not be found」が表示された場合、compose.ymlの「external: true」をコメントアウトして再実行する
 
 # Docker spring-boot環境への接続
 docker compose exec app bash

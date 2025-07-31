@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,8 +20,8 @@ public class CourseController {
   private final CourseService courseService;
 
   @GetMapping("/api/courses")
-  public ResponseEntity<List<CourseResponse>> findAll(@AuthenticationPrincipal UserDetails userDetails) {
-    List<Course> courses = courseService.findCourses(userDetails.getUsername());
+  public ResponseEntity<List<CourseResponse>> findAll(@AuthenticationPrincipal Jwt jwt) {
+    List<Course> courses = courseService.findCourses(jwt.getSubject());
 
     return ResponseEntity.ok(CourseResponse.convert(courses));
   }

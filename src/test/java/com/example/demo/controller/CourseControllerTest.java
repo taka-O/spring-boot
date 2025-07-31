@@ -18,7 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -42,19 +42,19 @@ public class CourseControllerTest {
   public void setUp() {
     new DbSetup(new DataSourceDestination(dataSource),
       Operations.sequenceOf(UserOperation.DELETE_ALL,
-                            UserOperation.INSERT_USER,
                             CourseOperation.DELETE_ALL_COURSE,
                             CourseOperation.DELETE_ALL_COURSE_USER,
+                            UserOperation.INSERT_USER,
                             CourseOperation.INSERT_COURSE,
                             CourseOperation.INSERT_COURSE_USER)).launch();
   }
 
   @Test
   @WithMockUser(username = "admin1ro@test.com", roles = {"ADMIN"})
-  @WithUserDetails("admin1ro@test.com")
   void ADMINユーザにて有効なデータを取得できることを確認(@Autowired MockMvc mvc) throws Exception {
     MvcResult result = mvc.perform(
             MockMvcRequestBuilders.get("/api/courses")
+              .with(SecurityMockMvcRequestPostProcessors.jwt().jwt(jwt -> jwt.subject("admin1ro@test.com")))
               .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(MockMvcResultMatchers.status().isOk())
@@ -87,10 +87,10 @@ public class CourseControllerTest {
 
   @Test
   @WithMockUser(username = "instructor2ro@test.com", roles = {"INSTRUCTOR"})
-  @WithUserDetails("instructor2ro@test.com")
   void INSTRUCTORユーザにて有効な全体告知と所属コースのデータを取得できることを確認(@Autowired MockMvc mvc) throws Exception {
     MvcResult result = mvc.perform(
             MockMvcRequestBuilders.get("/api/courses")
+              .with(SecurityMockMvcRequestPostProcessors.jwt().jwt(jwt -> jwt.subject("instructor2ro@test.com")))
               .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(MockMvcResultMatchers.status().isOk())
@@ -111,10 +111,10 @@ public class CourseControllerTest {
 
   @Test
   @WithMockUser(username = "student4ro@test.com", roles = {"STUDENT"})
-  @WithUserDetails("student4ro@test.com")
   void STUDENTユーザにて有効な全体告知と所属コースのデータを取得できることを確認(@Autowired MockMvc mvc) throws Exception {
     MvcResult result = mvc.perform(
             MockMvcRequestBuilders.get("/api/courses")
+              .with(SecurityMockMvcRequestPostProcessors.jwt().jwt(jwt -> jwt.subject("student4ro@test.com")))
               .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(MockMvcResultMatchers.status().isOk())

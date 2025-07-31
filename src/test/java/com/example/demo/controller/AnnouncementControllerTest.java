@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -56,10 +57,10 @@ public class AnnouncementControllerTest {
 
   @Test
   @WithMockUser(username = "admin1ro@test.com", roles = {"ADMIN"})
-  @WithUserDetails("admin1ro@test.com")
   void ADMINユーザにて有効なデータを取得できることを確認(@Autowired MockMvc mvc) throws Exception {
     MvcResult result = mvc.perform(
             MockMvcRequestBuilders.get("/api/announcements")
+              .with(SecurityMockMvcRequestPostProcessors.jwt().jwt(jwt -> jwt.subject("admin1ro@test.com")))
               .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(MockMvcResultMatchers.status().isOk())
@@ -82,10 +83,10 @@ public class AnnouncementControllerTest {
 
   @Test
   @WithMockUser(username = "instructor1ro@test.com", roles = {"INSTRUCTOR"})
-  @WithUserDetails("instructor1ro@test.com")
   void INSTRUCTORユーザにて有効な全体告知と所属コースのデータを取得できることを確認(@Autowired MockMvc mvc) throws Exception {
     MvcResult result = mvc.perform(
             MockMvcRequestBuilders.get("/api/announcements")
+              .with(SecurityMockMvcRequestPostProcessors.jwt().jwt(jwt -> jwt.subject("instructor1ro@test.com")))
               .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(MockMvcResultMatchers.status().isOk())
@@ -105,10 +106,10 @@ public class AnnouncementControllerTest {
 
   @Test
   @WithMockUser(username = "student3ro@test.com", roles = {"STUDENT"})
-  @WithUserDetails("student3ro@test.com")
   void STUDENTユーザにて有効な全体告知と所属コースのデータを取得できることを確認(@Autowired MockMvc mvc) throws Exception {
     MvcResult result = mvc.perform(
             MockMvcRequestBuilders.get("/api/announcements")
+              .with(SecurityMockMvcRequestPostProcessors.jwt().jwt(jwt -> jwt.subject("student3ro@test.com")))
               .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(MockMvcResultMatchers.status().isOk())
